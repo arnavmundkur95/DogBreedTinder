@@ -7,17 +7,17 @@ export const TabBar = ({ state, navigation }: any) => {
         const iconDictionary: IconDictionary = {
             Home: (
                 <View>
-                    <Icon name='dog' size={38} />
+                    <Icon name='dog' size={38} color={'#ad7203'} />
                 </View>
             ),
             Profile: (
                 <View>
-                    <FAIcon name='user' size={35} color={'black'} />
+                    <FAIcon name='user' size={35} color={'#00028c'} />
                 </View>
             ),
             Likes: (
                 <View>
-                    <FAIcon name='heart' size={30} color={'black'} />
+                    <FAIcon name='heart' size={30} color={'#eb495e'} />
                 </View>
             ),
         }

@@ -21,17 +21,19 @@ export const BreedViewer = () => {
   const toShow: Partial<DogBreed>[] = useSelector(getToShow)
   const breeds: Partial<DogBreed>[] = useSelector(getDogBreeds)
   const activePile: Partial<DogBreed>[] = _.sampleSize(toShow, PILE_SIZE)
-  //   console.log(breed.length, breed[0])
   //   const [stack, setStack] = React.useState<Partial<DogBreed>[]>(toShow)
   //   const [shown, setShown] = React.useState<Partial<DogBreed>[]>([])
 
-  function getBreedTemperament(dog: Partial<DogBreed>): string[] {
-    return (
-      breeds
-        .find((i) => i.breed === dog.breed)
-        ?.temperament?.replace(/,/g, '')
-        .split(' ') || ['Unknown']
-    )
+  function getBreedTemperament(dog: Partial<DogBreed>): string {
+    return breeds.find((i) => i.breed === dog.breed)?.temperament || 'Unknown'
+  }
+
+  function getBreedLifeSpan(dog: Partial<DogBreed>): string {
+    return breeds.find((i) => i.breed === dog.breed)?.lifeSpan || 'Unknown'
+  }
+
+  function getBreedWeight(dog: Partial<DogBreed>): string {
+    return breeds.find((i) => i.breed === dog.breed)?.weight || 'Unknown'
   }
 
   const DogCard = ({
@@ -77,7 +79,7 @@ export const BreedViewer = () => {
         key={Math.random().toString()}
         style={{
           ...styles.slideContainer,
-          top: '20%',
+          top: '15%',
           left: '10%',
           paddingHorizontal: 10,
           paddingTop: 10,
@@ -91,7 +93,7 @@ export const BreedViewer = () => {
         }}
         {...panResponder.panHandlers}
       >
-        <Image
+        <Animated.Image
           source={{ uri: dog.imageURL }}
           style={{
             width: '100%',
@@ -101,23 +103,34 @@ export const BreedViewer = () => {
           }}
           resizeMode={'cover'}
         />
-        <Text style={{ fontSize: 20, marginBottom: 15 }}>{dog.breed}</Text>
-        <View style={{ flexDirection: 'column' }}>
-          <Text style={{ fontSize: 15, color: 'black' }}>
+        <Animated.Text style={{ fontSize: 20, marginBottom: 15 }}>
+          {dog.breed}
+        </Animated.Text>
+        <Animated.View
+          style={{
+            ...styles.characteristicRow,
+            alignItems: 'center',
+          }}
+        >
+          <Animated.Text style={styles.characteristicTitle}>
             {'Temperament: '}
-          </Text>
-          <View>
-            {getBreedTemperament(dog).map((temperament) => (
-              <Text style={{ marginLeft: 10 }}>{'- ' + temperament}</Text>
-            ))}
-          </View>
-          {/* <Text
-            style={{ fontSize: 13, color: 'black', width: 200 }}
-            numberOfLines={2}
-          >
+          </Animated.Text>
+          <Animated.Text style={{ width: '50%' }} numberOfLines={5}>
             {getBreedTemperament(dog)}
-          </Text> */}
-        </View>
+          </Animated.Text>
+        </Animated.View>
+        <Animated.View style={styles.characteristicRow}>
+          <Animated.Text style={styles.characteristicTitle}>
+            {'Lifespan: '}
+          </Animated.Text>
+          <Animated.Text>{getBreedLifeSpan(dog)}</Animated.Text>
+        </Animated.View>
+        <Animated.View style={{ flexDirection: 'row' }}>
+          <Animated.Text style={styles.characteristicTitle}>
+            {'Weight: '}
+          </Animated.Text>
+          <Animated.Text>{getBreedWeight(dog)}</Animated.Text>
+        </Animated.View>
       </Animated.View>
     )
   }
@@ -142,7 +155,7 @@ export const BreedViewer = () => {
 const styles = StyleSheet.create({
   slideContainer: {
     width: '80%',
-    height: '60%',
+    height: '70%',
     position: 'absolute',
     shadowColor: 'black',
     shadowRadius: 10,
@@ -150,5 +163,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     elevation: 5,
     borderRadius: 10,
+  },
+  characteristicTitle: {
+    fontSize: 15,
+    color: 'black',
+    marginRight: 10,
+    fontWeight: 'bold',
+  },
+  characteristicRow: {
+    flexDirection: 'row',
+    marginBottom: 10,
   },
 })

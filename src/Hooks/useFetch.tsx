@@ -1,25 +1,22 @@
 import React from 'react'
-import Config from 'react-native-config'
+import { Config } from '../Utilities/Config'
 
 export const useFetch = () => {
-    const [loading, setLoading] = React.useState<boolean>(false)
-    const [data, setData] = React.useState<any>()
+  const execute = async (path: string) => {
+    const requestURL = Config.apiURL + path
 
-    const execute = async (path: string) => {
-        const requestURL = Config.baseAPIUrl + path
-        console.log(
-            'requestedURL',
-            requestURL,
-            Config.baseAPIUrl,
-            Config.dogAPIKey
-        )
-        // setLoading(true)
-        // const response = await fetch(requestURL, {
-        //     headers: { 'x-api-key': Config.dogAPIKey },
-        // })
-        // setLoading(false)
-        // setData(response)
+    try {
+      const response = await fetch(requestURL, {
+        headers: { 'x-api-key': Config.apiKey },
+      })
+
+      const parsedResponse = await response.json()
+
+      return parsedResponse
+    } catch (e) {
+      console.error(e)
     }
+  }
 
-    return { execute, loading, data }
+  return { execute }
 }

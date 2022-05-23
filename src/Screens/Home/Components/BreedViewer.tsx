@@ -7,22 +7,39 @@ import {
   Animated,
   PanResponder,
 } from 'react-native'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   getDogBreeds,
   getToShow,
 } from '../../../Store/Selectors/UtilitySelector'
 import { useFetchDogs } from '../../../Hooks/useFetchDogs'
 import _ from 'lodash'
+import {
+  setAlreadyShown,
+  setLikedBreeds,
+  setToShow,
+} from '../../../Store/Slices/UtilitySlice'
 
 export const BreedViewer = () => {
   const PILE_SIZE = 5
-  const { loading, fetchDogPictures } = useFetchDogs()
+  const hash = require('object-hash')
+  //   const { loading, fetchDogPictures } = useFetchDogs()
   const toShow: Partial<DogBreed>[] = useSelector(getToShow)
   const breeds: Partial<DogBreed>[] = useSelector(getDogBreeds)
-  const activePile: Partial<DogBreed>[] = _.sampleSize(toShow, PILE_SIZE)
-  //   const [stack, setStack] = React.useState<Partial<DogBreed>[]>(toShow)
-  //   const [shown, setShown] = React.useState<Partial<DogBreed>[]>([])
+  const [activePile, setActivePile] = React.useState<Partial<DogBreed>[]>(
+    _.sampleSize(toShow, PILE_SIZE)
+  )
+  const dispatch = useDispatch()
+
+  React.useEffect(() => {
+    if (activePile.length < 1) {
+      setActivePile(_.sampleSize(toShow, PILE_SIZE))
+    }
+  }, [activePile])
+
+  const [shown, setShown] = React.useState<Set<Partial<DogBreed['imageID']>>>(
+    new Set<Partial<DogBreed['imageID']>>([])
+  )
 
   function getBreedTemperament(dog: Partial<DogBreed>): string {
     return breeds.find((i) => i.breed === dog.breed)?.temperament || 'Unknown'
@@ -36,6 +53,23 @@ export const BreedViewer = () => {
     return breeds.find((i) => i.breed === dog.breed)?.weight || 'Unknown'
   }
 
+  function removeDogFromPile(dog: Partial<DogBreed>) {
+    const filteredActivePile = activePile.filter((i) => hash(i) !== hash(dog))
+    setActivePile(filteredActivePile)
+
+    const updatedToShow = toShow.filter(
+      (i: Partial<DogBreed>) => !shown.has(i.imageID!)
+    )
+    dispatch(setToShow(updatedToShow))
+  }
+
+  function addToShownPictures(imageID: string) {
+    dispatch(setAlreadyShown(imageID))
+    const newShown = new Set(shown)
+    newShown.add(imageID)
+    setShown(newShown)
+  }
+
   const DogCard = ({
     dog,
     index,
@@ -44,7 +78,6 @@ export const BreedViewer = () => {
     index: number
   }) => {
     const pan = React.useRef(new Animated.ValueXY({ x: 0, y: 0 })).current
-    const [hide, setHide] = React.useState<boolean>(false)
     const decisionBoundary = 135
 
     const panResponder = React.useRef(
@@ -53,7 +86,11 @@ export const BreedViewer = () => {
         onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
         onPanResponderRelease: (event, gestureEvent) => {
           if (Math.abs(gestureEvent.dx) > decisionBoundary) {
-            setHide(true)
+            if (gestureEvent.dx > 0) {
+              dispatch(setLikedBreeds(dog))
+            }
+            addToShownPictures(dog.imageID!)
+            removeDogFromPile(dog)
           } else {
             Animated.spring(pan, {
               toValue: {
@@ -84,7 +121,6 @@ export const BreedViewer = () => {
           paddingHorizontal: 10,
           paddingTop: 10,
           backgroundColor: '#FFFEF2',
-          opacity: hide ? 0 : 1,
           transform: [
             { translateX: pan.x },
             { translateY: pan.y },
@@ -145,6 +181,7 @@ export const BreedViewer = () => {
         justifyContent: 'center',
       }}
     >
+      {console.log(activePile.length)}
       {activePile.length
         ? activePile.map((dog, index) => <DogCard dog={dog} index={index} />)
         : null}

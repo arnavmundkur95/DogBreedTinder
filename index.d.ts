@@ -19,3 +19,7 @@ declare type DogBreed = {
   imageID: string
   breedID: string
 }
+
+declare type HeaderProps = {
+  title: string
+}

@@ -1,6 +1,10 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getDogBreeds, getToShow } from '../Store/Selectors/UtilitySelector'
+import {
+  getAlreadyShown,
+  getDogBreeds,
+  getToShow,
+} from '../Store/Selectors/UtilitySelector'
 import { setDogBreeds, setToShow } from '../Store/Slices/UtilitySlice'
 import { useFetch } from './useFetch'
 import _ from 'lodash'
@@ -12,6 +16,10 @@ export const useFetchDogs = () => {
   const dispatch = useDispatch()
   const NUM_DOG_PICS: number = 5
   const [loading, setLoading] = React.useState<boolean>(false)
+  const shownBreeds: string[] = useSelector(getAlreadyShown) || []
+  const alreadyShown: Set<string> = shownBreeds.length
+    ? new Set<string>(shownBreeds)
+    : new Set([])
 
   const fetchDogBreedList = async () => {
     try {
@@ -49,19 +57,19 @@ export const useFetchDogs = () => {
           `/images/search?limit=${NUM_DOG_PICS}&breed_id=${dogBreed.breedID}`
         )
         pictureResponse.forEach((pictureObject: any) => {
-          fetchedToShow.push({
-            breed: dogBreed.breed,
-            imageURL: pictureObject.url,
-            temperament: dogBreed.temperament,
-            imageID: pictureObject.id,
-          })
+          if (!alreadyShown.has(pictureObject.id)) {
+            fetchedToShow.push({
+              breed: dogBreed.breed,
+              imageURL: pictureObject.url,
+              temperament: dogBreed.temperament,
+              imageID: pictureObject.id,
+            })
+          }
         })
       }
 
       setLoading(false)
-      //   if (fetchedToShow.length) {
       dispatch(setToShow(fetchedToShow))
-      //   }
     } catch (e) {
       console.error(e)
     }

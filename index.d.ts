@@ -31,3 +31,7 @@ declare type DogCardProps = {
   addToShownPictures: (imageID: string) => void
   removeDogFromPile: (dog: Partial<DogBreed>) => void
 }
+
+declare type TemperamentProps = {
+  temperament: string | ListRenderItemInfo<string>
+}

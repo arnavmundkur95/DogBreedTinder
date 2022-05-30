@@ -7,6 +7,9 @@ export interface UtilityReducerState {
   alreadyShown: Partial<DogBreed['imageID']>[]
   toShow: Partial<DogBreed>[]
   likedBreeds: Partial<DogBreed>[]
+  showLikedBreeds: boolean
+  temperaments: string[]
+  userTemperaments: string[]
 }
 
 export const INITIAL_STATE: UtilityReducerState = {
@@ -14,6 +17,9 @@ export const INITIAL_STATE: UtilityReducerState = {
   alreadyShown: [],
   toShow: [],
   likedBreeds: [],
+  showLikedBreeds: false,
+  temperaments: [],
+  userTemperaments: [],
 }
 
 export const UtilitySlice = createSlice({
@@ -46,6 +52,15 @@ export const UtilitySlice = createSlice({
         state.likedBreeds = []
       }
     },
+    setShowLikedBreeds(state, action: PayloadAction<boolean>) {
+      state.showLikedBreeds = action.payload
+    },
+    setTemperaments(state, action: PayloadAction<string[]>) {
+      state.temperaments = action.payload
+    },
+    setUserTemperaments(state, action: PayloadAction<string[]>) {
+      state.userTemperaments = action.payload
+    },
   },
 })
 
@@ -55,5 +70,8 @@ export const {
   setToShow,
   setLikedBreeds,
   clearLikedBreeds,
+  setShowLikedBreeds,
+  setTemperaments,
+  setUserTemperaments,
 } = UtilitySlice.actions
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector

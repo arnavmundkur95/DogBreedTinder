@@ -63,6 +63,7 @@ export const BreedViewer = () => {
 
   return (
     <View
+      key={activePile.toString()}
       style={{
         flex: 1,
         width: '100%',
@@ -71,10 +72,10 @@ export const BreedViewer = () => {
         justifyContent: 'center',
       }}
     >
-      {console.log(activePile.length, toShow.length)}
       {activePile.length ? (
         activePile.map((dog, index) => (
           <DogCard
+            key={index}
             dog={dog}
             index={index}
             activePile={activePile}

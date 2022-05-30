@@ -3,9 +3,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   getAlreadyShown,
   getDogBreeds,
+  getTemperaments,
   getToShow,
 } from '../Store/Selectors/UtilitySelector'
-import { setDogBreeds, setToShow } from '../Store/Slices/UtilitySlice'
+import {
+  setDogBreeds,
+  setTemperaments,
+  setToShow,
+} from '../Store/Slices/UtilitySlice'
 import { useFetch } from './useFetch'
 import _ from 'lodash'
 
@@ -20,6 +25,7 @@ export const useFetchDogs = () => {
   const alreadyShown: Set<string> = shownBreeds.length
     ? new Set<string>(shownBreeds)
     : new Set([])
+  const temperaments: string[] = useSelector(getTemperaments) || []
 
   const fetchDogBreedList = async () => {
     try {
@@ -85,6 +91,30 @@ export const useFetchDogs = () => {
       fetchDogPictures()
     }
   }, [])
+
+  React.useEffect(() => {
+    if (temperaments.length < 1 && dogBreedList.length > 1) {
+      let newTemperaments: string[] = []
+
+      dogBreedList.forEach((breed: Partial<DogBreed>) => {
+        if (breed.temperament!) {
+          const currentTemperaments: string = breed
+            .temperament!.replace(/,/g, '')
+            .toLowerCase()
+          let splitCurrentTemperaments: string[] =
+            currentTemperaments.split(' ')
+
+          splitCurrentTemperaments.forEach((t: string) => {
+            if (!newTemperaments.includes(t)) {
+              newTemperaments.push(t)
+            }
+          })
+        }
+      })
+
+      dispatch(setTemperaments(newTemperaments))
+    }
+  }, [dogBreedList])
 
   return {
     dogBreedList,

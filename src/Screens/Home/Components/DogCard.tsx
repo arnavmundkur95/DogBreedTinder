@@ -31,12 +31,15 @@ export const DogCard = ({
   const panResponder = React.useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+        useNativeDriver: false,
+      }),
       onPanResponderRelease: (event, gestureEvent) => {
         if (Math.abs(gestureEvent.dx) > decisionBoundary) {
           if (gestureEvent.dx > 0) {
             dispatch(setLikedBreeds(dog))
           }
+
           addToShownPictures(dog.imageID!)
           removeDogFromPile(dog)
         } else {

@@ -6,15 +6,15 @@ import { TabBar } from './TabBar'
 const Tab = createBottomTabNavigator<RootStackRoutes>()
 
 export const RootStack = () => {
-    return (
-        <Tab.Navigator
-            initialRouteName='Home'
-            screenOptions={{ headerShown: false }}
-            tabBar={(props) => <TabBar {...props} />}
-        >
-            <Tab.Screen name='Likes' component={Likes} />
-            <Tab.Screen name='Home' component={Home} />
-            <Tab.Screen name='Profile' component={Profile} />
-        </Tab.Navigator>
-    )
+  return (
+    <Tab.Navigator
+      initialRouteName='Home'
+      screenOptions={{ headerShown: false, tabBarHideOnKeyboard: true }}
+      tabBar={(props) => <TabBar {...props} />}
+    >
+      <Tab.Screen name='Likes' component={Likes} />
+      <Tab.Screen name='Home' component={Home} />
+      <Tab.Screen name='Profile' component={Profile} />
+    </Tab.Navigator>
+  )
 }

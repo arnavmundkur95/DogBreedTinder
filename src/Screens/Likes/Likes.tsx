@@ -1,19 +1,27 @@
 import React from 'react'
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  Image,
-  ScrollView,
-} from 'react-native'
+import { StyleSheet, View, Text, FlatList, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useSelector } from 'react-redux'
 import { Header } from '../../Components/Header'
 import { getLikedBreeds } from '../../Store/Selectors/UtilitySelector'
 
+const deduplicateBreeds = (likedBreeds: Partial<DogBreed>[]) => {
+  let activeBreeds: Set<string> = new Set<string>([])
+  let toShow: Partial<DogBreed>[] = []
+
+  likedBreeds.forEach((breed: Partial<DogBreed>) => {
+    if (!activeBreeds.has(breed.breed!)) {
+      toShow.push(breed)
+      activeBreeds.add(breed.breed!)
+    }
+  })
+
+  return toShow
+}
+
 export const Likes = () => {
-  const likedBreeds = useSelector(getLikedBreeds) || []
+  const likedBreeds: Partial<DogBreed>[] = useSelector(getLikedBreeds) || []
+  const toShow: Partial<DogBreed>[] = deduplicateBreeds(likedBreeds)
 
   const RenderItem = ({ item }: { item: Partial<DogBreed> }) => {
     return (
@@ -42,11 +50,11 @@ export const Likes = () => {
     )
   }
 
-  const ShowLikedBreeds = () => {
+  const RenderLikedBreeds = () => {
     return (
       <View style={{ marginTop: 30 }}>
         <FlatList
-          data={likedBreeds}
+          data={toShow}
           renderItem={RenderItem}
           ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
           ListFooterComponent={<View style={{ height: 200 }} />}
@@ -58,7 +66,7 @@ export const Likes = () => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Header title={'Liked Breeds'} />
-      {likedBreeds.length ? <ShowLikedBreeds /> : null}
+      {likedBreeds.length ? <RenderLikedBreeds /> : null}
     </SafeAreaView>
   )
 }

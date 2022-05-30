@@ -41,9 +41,19 @@ export const UtilitySlice = createSlice({
       temp.push(action.payload)
       state.likedBreeds = temp
     },
+    clearLikedBreeds(state, action: PayloadAction<boolean>) {
+      if (action.payload) {
+        state.likedBreeds = []
+      }
+    },
   },
 })
 
-export const { setDogBreeds, setAlreadyShown, setToShow, setLikedBreeds } =
-  UtilitySlice.actions
+export const {
+  setDogBreeds,
+  setAlreadyShown,
+  setToShow,
+  setLikedBreeds,
+  clearLikedBreeds,
+} = UtilitySlice.actions
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector

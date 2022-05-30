@@ -23,3 +23,11 @@ declare type DogBreed = {
 declare type HeaderProps = {
   title: string
 }
+
+declare type DogCardProps = {
+  dog: Partial<DogBreed>
+  index: number
+  activePile: Partial<DogBreed>[]
+  addToShownPictures: (imageID: string) => void
+  removeDogFromPile: (dog: Partial<DogBreed>) => void
+}

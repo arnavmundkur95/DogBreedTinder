@@ -201,7 +201,7 @@ export const Profile = () => {
           }}
         >
           {selectedTemperaments.map((t) => {
-            return <TemperamentPill temperament={t} />
+            return <TemperamentPill temperament={t} key={t} />
           })}
         </View>
       </View>
